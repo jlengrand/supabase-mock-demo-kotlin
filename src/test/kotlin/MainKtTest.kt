@@ -13,22 +13,17 @@ import kotlin.test.assertEquals
 
 class MainKtTest{
 
-    private lateinit var supabaseClient: SupabaseClient
+    private lateinit var client : DatabaseClient
 
     @BeforeTest
     fun setUp() {
-        supabaseClient = mockk<SupabaseClient>()
-        val postgrest = mockk<Postgrest>()
-        val postgrestBuilder = mockk<PostgrestBuilder>()
-        val postgrestResult = PostgrestResult(body = null, headers = Headers.Empty)
-        mockkStatic(supabaseClient::postgrest)
-        every { supabaseClient.postgrest["person"] } returns postgrestBuilder
-        coEvery { postgrestBuilder.insert(any<List<Person>>()) } returns postgrestResult
+
+        client = mockk<DatabaseClient>()
+        coEvery { client.savePersons(any<List<Person>>()) } returns listOf()
     }
 
     @AfterTest
     fun tearDown() {
-        unmockkStatic(SupabaseClient::postgrest)
     }
 
 
@@ -39,7 +34,7 @@ class MainKtTest{
         val fakePersons = listOf(Person("name_1", 1), Person("name_2", 2))
 
         runBlocking {
-            val result = savePerson(fakePersons, supabaseClient)
+            val result = savePerson(fakePersons, client)
             assertEquals(2, result.size)
         }
     }

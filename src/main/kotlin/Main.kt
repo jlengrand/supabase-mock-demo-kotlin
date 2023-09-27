@@ -28,16 +28,17 @@ data class ResultPerson (
 
 
 
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
     val supabaseClient = createSupabaseClient(
         supabaseUrl = dbUrl,
         supabaseKey = dbKey
     ) {
         install(Postgrest)
     }
+
 }
 
-suspend fun savePerson(persons: List<Person>, client: SupabaseClient): List<ResultPerson> {
+suspend fun savePerson(persons: List<Person>, client: DatabaseClient): List<ResultPerson> {
 
     val timedPersons = persons.map {
         Person(
@@ -47,8 +48,15 @@ suspend fun savePerson(persons: List<Person>, client: SupabaseClient): List<Resu
         )
     }
 
-    return client
-        .postgrest["person"]
-        .insert(persons)
-        .decodeList<ResultPerson>()
+    return client.savePersons(timedPersons)
+}
+
+class DatabaseClient(private val client: SupabaseClient){
+
+    suspend fun savePersons(persons: List<Person>): List<ResultPerson> {
+        return client
+            .postgrest["person"]
+            .insert(persons)
+            .decodeList<ResultPerson>()
+    }
 }
