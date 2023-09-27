@@ -49,6 +49,6 @@ suspend fun savePerson(persons: List<Person>, client: SupabaseClient): List<Resu
 
     return client
         .postgrest["person"]
-        .insert(persons, upsert = true)
+        .insert(persons)
         .decodeList<ResultPerson>()
 }

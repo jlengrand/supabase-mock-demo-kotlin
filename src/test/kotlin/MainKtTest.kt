@@ -4,10 +4,9 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.PostgrestBuilder
 import io.github.jan.supabase.postgrest.query.PostgrestResult
 import io.ktor.http.*
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,19 +16,21 @@ class MainKtTest{
     private lateinit var supabaseClient: SupabaseClient
 
     @BeforeTest
-    fun setUp(){
-
-        val supabaseClient = mockk<SupabaseClient>()
-
+    fun setUp() {
+        supabaseClient = mockk<SupabaseClient>()
         val postgrest = mockk<Postgrest>()
         val postgrestBuilder = mockk<PostgrestBuilder>()
         val postgrestResult = PostgrestResult(body = null, headers = Headers.Empty)
-
-        every { supabaseClient.postgrest } returns postgrest
-        every { postgrest["path"] } returns postgrestBuilder
-        coEvery { postgrestBuilder.insert(values = any<List<Person>>()) } returns postgrestResult
-
+        mockkStatic(supabaseClient::postgrest)
+        every { supabaseClient.postgrest["person"] } returns postgrestBuilder
+        coEvery { postgrestBuilder.insert(any<List<Person>>()) } returns postgrestResult
     }
+
+    @AfterTest
+    fun tearDown() {
+        unmockkStatic(SupabaseClient::postgrest)
+    }
+
 
 
     @Test
