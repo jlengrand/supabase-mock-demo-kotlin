@@ -1,42 +1,109 @@
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.PostgrestBuilder
-import io.github.jan.supabase.postgrest.query.PostgrestResult
-import io.ktor.http.*
-import io.mockk.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.ClassRule
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.testcontainers.containers.DockerComposeContainer
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import java.io.File
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
+import java.sql.Statement
+import java.time.Duration
 
-class MainKtTest{
+
+@Testcontainers
+class MainKtTest {
+
+    @Container
+    var environment: DockerComposeContainer<*> =
+        DockerComposeContainer(File("src/test/resources/docker-compose.yml"))
+            .withExposedService("postgrest-db", 5432)
+            .withExposedService("postgrest", 3000,
+                Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
+
+//    @Container
+//    val postgreSQLContainer = PostgreSQLContainer("postgres:16-alpine")
+//        .withExposedPorts(5432)
+
+//    val POSTGREST_IMAGE = DockerImageName.parse("postgrest/postgrest:v11.2.0")
+
+
+//    val postgrest: GenericContainer<*> = GenericContainer(POSTGREST_IMAGE)
+//        .withEnv("PGRST_DB_URI", "postgres://test:test@localhost:53078/test?loggerLevel=OFF")
+//        .withExposedPorts(3000)
+//        .waitingFor(Wait.forHttp("/").forStatusCode(200))
+
 
     private lateinit var client : DatabaseClient
+    private lateinit var connection: Connection
 
-    @BeforeTest
+    @BeforeEach
     fun setUp() {
+//
+//        println(postgreSQLContainer.getPassword())
+//        println(postgreSQLContainer.getUsername())
+//        println(postgreSQLContainer.getPortBindings())
+//        println(postgreSQLContainer.getDatabaseName())
+//
 
-        client = mockk<DatabaseClient>()
-        coEvery { client.savePersons(any<List<Person>>()) } returns listOf()
+
+
+//        postgrest.start()
     }
 
-    @AfterTest
+    @AfterEach
     fun tearDown() {
+        connection.close()
     }
-
-
 
     @Test
-    fun testSavePerson(){
+    fun savePerson() {
+        val psqlUrl = (environment.getServiceHost("postgrest-db", 5432)
+                + ":" +
+                environment.getServicePort("postgrest-db", 5432))
+        println(psqlUrl)
+        connection = DriverManager
+            .getConnection("jdbc:postgresql://${psqlUrl}/", "postgres", "postgres")
 
-        val fakePersons = listOf(Person("name_1", 1), Person("name_2", 2))
+
+
+//        val jdbcURl = postgreSQLContainer.getJdbcUrl()
+//        val cleanUrl = jdbcURl.replace("jdbc:postgresql://", "postgres://")
+//        val postgrest: GenericContainer<*> = GenericContainer(POSTGREST_IMAGE)
+//            .withEnv("PGRST_DB_URI", cleanUrl)
+//            .withExposedPorts(3000)
+//            .waitingFor(Wait.forHttp("/").forStatusCode(200))
+//
+//        postgrest.start()
+
+        val st: Statement = connection.createStatement()
+        val rs: ResultSet = st.executeQuery("SELECT * FROM pg_catalog.pg_tables;")
+//        while (rs.next()) {
+        rs.next()
+            print("Column 1 returned ")
+            println(rs.getString(1))
+//        }
+        rs.close()
+        st.close()
+
+        val client = HttpClient(CIO)
+
+        println("///")
+//        println(postgrest.getLogs())
+        println("///")
 
         runBlocking {
-            val result = savePerson(fakePersons, client)
-            assertEquals(2, result.size)
+            val response: HttpResponse = client.get("http://localhost:3000/")
+            println(response.bodyAsText())
         }
     }
-
 }

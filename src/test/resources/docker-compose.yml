@@ -1,0 +1,42 @@
+version: '3'
+
+# From here, for testing : https://github.com/mattddowney/compose-postgrest/blob/master/README.md
+services:
+
+  ################
+  # postgrest-db #
+  ################
+  postgrest-db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - DB_SCHEMA=${DB_SCHEMA}
+    volumes:
+      - "./initdb:/docker-entrypoint-initdb.d"
+    networks:
+      - postgrest-backend
+    restart: always
+
+  #############
+  # postgrest #
+  #############
+  postgrest:
+    image: postgrest/postgrest:latest
+    ports:
+      - "3000:3000"
+    # https://postgrest.org/en/latest/configuration.html#environment-variables
+    environment:
+      - PGRST_DB_URI=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgrest-db:5432/${POSTGRES_DB}
+      - PGRST_DB_SCHEMA=${DB_SCHEMA}
+      - PGRST_DB_ANON_ROLE=${DB_ANON_ROLE}
+    networks:
+      - postgrest-backend
+    restart: always
+
+networks:
+  postgrest-backend:
+    driver: bridge
