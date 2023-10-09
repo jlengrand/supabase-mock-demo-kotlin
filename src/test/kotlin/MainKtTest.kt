@@ -1,3 +1,5 @@
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
@@ -55,14 +57,16 @@ class MainKtTest {
 //        println(postgreSQLContainer.getDatabaseName())
 //
 
-
+        val psqlUrl = (environment.getServiceHost("postgrest", 3000)
+                + ":" +
+                environment.getServicePort("postgrest", 3000))
 
 //        postgrest.start()
     }
 
     @AfterEach
     fun tearDown() {
-        connection.close()
+//        connection.close()
     }
 
     @Test
@@ -105,5 +109,22 @@ class MainKtTest {
             val response: HttpResponse = client.get("http://localhost:3000/")
             println(response.bodyAsText())
         }
+    }
+
+    @Test
+    fun savePerson2(){
+
+        val url = environment.getServiceHost("postgrest", 3000) + ":" + environment.getServicePort("postgrest", 3000)
+
+        val supabaseClient = createSupabaseClient(
+            supabaseUrl = url,
+            supabaseKey = ""
+        ) {
+            install(Postgrest)
+        }
+
+
+        println(supabaseClient.supabaseHttpUrl)
+
     }
 }

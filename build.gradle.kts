@@ -34,6 +34,10 @@ dependencies {
     testImplementation("io.ktor:ktor-client-core:2.3.4")
     testImplementation("io.ktor:ktor-client-cio:2.3.4")
 
+    implementation(platform("io.github.jan-tennert.supabase:bom:1.0.3"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt"){
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
 
 }
 
