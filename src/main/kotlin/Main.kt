@@ -1,6 +1,4 @@
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.serialization.Serializable
 
@@ -24,9 +22,8 @@ data class ResultPerson (
     )
 }
 
-suspend fun main(args: Array<String>) {
+fun main() {
     println("Hello World!")
-
     // Application goes here
 }
 

@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.io.File
 
 @Testcontainers
-class MainKtTest {
+class MainKtTestTestContainers {
 
     // The jwt token is calculated manually (https://jwt.io/) based on the private key in the docker-compose.yml file, and a payload of {"role":"postgres"} to match the user in the database
     private val jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoicG9zdGdyZXMifQ.88jCdmcEuy2McbdwKPmuazNRD-dyD65WYeKIONDXlxg"
@@ -37,7 +37,6 @@ class MainKtTest {
             install(Postgrest)
         }
     }
-
 
     @Test
     fun testEmptyPersonTable(){

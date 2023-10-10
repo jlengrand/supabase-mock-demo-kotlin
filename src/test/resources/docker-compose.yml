@@ -1,6 +1,6 @@
 version: '3'
 
-# From here, for testing : https://github.com/mattddowney/compose-postgrest/blob/master/README.md
+# Thanks https://github.com/mattddowney/compose-postgrest/blob/master/README.md
 services:
 
   ################
