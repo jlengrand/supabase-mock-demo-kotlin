@@ -35,10 +35,9 @@ suspend fun main(args: Array<String>) {
     ) {
         install(Postgrest)
     }
-
 }
 
-suspend fun savePerson(persons: List<Person>, client: DatabaseClient): List<ResultPerson> {
+suspend fun savePerson(persons: List<Person>, client: SupabaseClient): List<ResultPerson> {
 
     val timedPersons = persons.map {
         Person(
@@ -48,15 +47,8 @@ suspend fun savePerson(persons: List<Person>, client: DatabaseClient): List<Resu
         )
     }
 
-    return client.savePersons(timedPersons)
-}
-
-class DatabaseClient(private val client: SupabaseClient){
-
-    suspend fun savePersons(persons: List<Person>): List<ResultPerson> {
-        return client
-            .postgrest["person"]
-            .insert(persons)
-            .decodeList<ResultPerson>()
-    }
+    return client
+        .postgrest["person"]
+        .insert(timedPersons)
+        .decodeList<ResultPerson>()
 }

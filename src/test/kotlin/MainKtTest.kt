@@ -1,5 +1,6 @@
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,14 +37,16 @@ class MainKtTest {
         val url = environment.getServiceHost("postgrest", 3000) + ":" + environment.getServicePort("postgrest", 3000)
 
         val supabaseClient = createSupabaseClient(
-            supabaseUrl = url,
+            supabaseUrl = "http://$url",
             supabaseKey = ""
         ) {
             install(Postgrest)
         }
 
 
-        println(supabaseClient.supabaseHttpUrl)
-
+        runBlocking {
+            val result = savePerson(listOf(Person("Jan", 30)), supabaseClient)
+            println(result)
+        }
     }
 }

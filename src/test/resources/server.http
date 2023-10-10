@@ -1,0 +1,9 @@
+
+### POST person
+POST http://localhost:80/rest/v1/person
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "age": 30
+}

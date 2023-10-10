@@ -37,6 +37,25 @@ services:
       - postgrest-backend
     restart: always
 
+
+  #############
+  # Nginx     #
+  #############
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    tty: true
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - postgrest-backend
+    depends_on:
+      - postgrest
+
 networks:
   postgrest-backend:
     driver: bridge
