@@ -19,9 +19,9 @@ class MainKtTest {
     var environment: DockerComposeContainer<*> =
         DockerComposeContainer(File("src/test/resources/docker-compose.yml"))
             .withExposedService("postgrest-db", 5432)
-            .withExposedService("postgrest", 3000,
-                Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
-
+            .withExposedService("postgrest", 3000)
+            .withExposedService("nginx", 80)
+            .waitingFor("nginx", Wait.forHttp("/").forStatusCode(200).withStartupTimeout(Duration.ofSeconds(15)))
 
     @BeforeEach
     fun setUp() {
@@ -34,7 +34,9 @@ class MainKtTest {
     @Test
     fun savePerson(){
 
-        val url = environment.getServiceHost("postgrest", 3000) + ":" + environment.getServicePort("postgrest", 3000)
+        val url = environment.getServiceHost("nginx", 80) + ":" + environment.getServicePort("nginx", 80)
+
+        println("url is $url")
 
         val supabaseClient = createSupabaseClient(
             supabaseUrl = "http://$url",

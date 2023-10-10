@@ -37,13 +37,11 @@ services:
       - postgrest-backend
     restart: always
 
-
   #############
   # Nginx     #
   #############
   nginx:
     image: nginx:alpine
-    container_name: nginx
     restart: always
     tty: true
     volumes:
@@ -53,8 +51,6 @@ services:
       - "443:443"
     networks:
       - postgrest-backend
-    depends_on:
-      - postgrest
 
 networks:
   postgrest-backend:
