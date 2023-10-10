@@ -1,7 +1,9 @@
 
 ### POST person
-POST http://localhost:80/rest/v1/person
+POST http://localhost:8090/rest/v1/person
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoicG9zdGdyZXMifQ.88jCdmcEuy2McbdwKPmuazNRD-dyD65WYeKIONDXlxg
 Content-Type: application/json
+
 
 {
   "name": "John Doe",

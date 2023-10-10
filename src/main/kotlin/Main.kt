@@ -37,6 +37,14 @@ suspend fun main(args: Array<String>) {
     }
 }
 
+suspend fun getPerson(client: SupabaseClient): List<ResultPerson> {
+
+    return client
+        .postgrest["person"]
+        .select().decodeList()
+}
+
+
 suspend fun savePerson(persons: List<Person>, client: SupabaseClient): List<ResultPerson> {
 
     val timedPersons = persons.map {
