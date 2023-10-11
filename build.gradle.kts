@@ -34,6 +34,8 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
 
+    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.ktor:ktor-client-mock:2.3.5")
 }
 
 tasks.test {
