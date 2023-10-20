@@ -31,8 +31,6 @@ dependencies {
 
     testImplementation("org.postgresql:postgresql:42.3.8")
 
-
-
     testImplementation("io.mockk:mockk:1.13.7")
     testImplementation("io.ktor:ktor-client-mock:2.3.5")
 }
